@@ -12,16 +12,22 @@ REM $INCLUDE: 'future.bi'
 
 InitRoutines
 
-
 Future.PRINT 120, 120, "Probando", 0, 8
+
+
+LoadTileMap 1
+
+
 
 WaitForEnter
 
-LoadTileMap 1
+
 
 WaitForEnter
 
 EndRoutines
+
+			    
 
 SUB EndRoutines
 	KBHoff
@@ -29,6 +35,8 @@ SUB EndRoutines
 	DeallocateXMS tileset1%
 	
 END SUB
+
+
 
 SUB InitRoutines
 	Set320x240 8
@@ -45,18 +53,23 @@ END SUB
 SUB LoadTileMap (tileid)
 
 IF tileid = 1 THEN
-tilemap$ = "xmonka\asset\tlcity.bmp"
-CALL Future.LoadBMP(tilemap$, 0, 0)
+tilemap$ = "virtual\asset\orkyda.bmp"
+CALL Future.LoadBMP(tilemap$, -100, -100)
+
+Changepal 3, 45, 60, 30
+Changepal 2, 34, 43, 13
+Changepal 1, 12, 24, 13
+Changepal 0, 3, 14, 13
+
 END IF
 
 END SUB
 
 SUB WaitForEnter
-	Keyp = 0
-	
-	WHILE Keyp = 0
-		Keyp = GetKey(28)
-	WEND
-	
+    ' Wait for the key to be released
+    WHILE GetKey(28) <> 0: WEND
+
+    ' Now wait for a fresh press
+    WHILE GetKey(28) = 0: WEND
 END SUB
 
