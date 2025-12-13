@@ -384,13 +384,8 @@ Moves(16).CFCHECK = 0
 Moves(16).CFSECONDARY = 0
 Moves(16).BOOSTERSCALE = 0
 
-Moves().UNAME = ""
-Moves().DESCRIPTION = ""
-Moves().POWER = 
-Moves().STATUS = 3
-Moves().CFCHECK = 
-Moves().CFSECONDARY = 
-Moves().BOOSTERSCALE = 
+
+
 
 
 

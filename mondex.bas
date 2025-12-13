@@ -49,7 +49,7 @@ Familiars(6).COOLDOWN = 0
 
 'Stozernik = A colossal industrial shipyard robot that can pull cards or foes'
 
-Familiars(7).UNAME = "STOZERNIK"
+Familiars(7).UNAME = "STOZCNIK"
 Familiars(7).HEARTS = 11
 Familiars(7).ELEMENT = 2
 Familiars(7).PASSIVE = 0
