@@ -11,7 +11,7 @@ DEFINT A-Z
 
 'Actual monster cards'
 TYPE Familiar
-    UNAME       AS STRING * 12
+    UNAME      AS STRING * 12
     HEARTS     AS INTEGER
     ELEMENT    AS INTEGER
     PASSIVE    AS INTEGER   ' passive ID
@@ -80,7 +80,13 @@ DIM Passives(1 TO 5) AS PASSIVE
 
 'Arrays containing the actual game state'
 
-DIM PlayerDeck(1 to 40) AS Card
-DIM PlayerMonsters(1 to 6) AS GameFam
-DIM FoeDeck(1 to 40) AS Card
-DIM FoeMonsters(1 to 40) AS GameFam 
+DIM SHARED PlayerDeck(1 to 40) AS Card
+DIM SHARED PlayerMonsters(1 to 6) AS GameFam
+DIM SHARED FoeDeck(1 to 40) AS Card
+DIM SHARED FoeMonsters(1 to 6) AS GameFam 
+
+'Ids for the current monster in game'
+ActiveFam = 1
+ActiveFoe = 1
+
+

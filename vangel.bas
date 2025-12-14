@@ -11,7 +11,7 @@ DEFINT A-Z
 
 'Actual monster cards'
 TYPE Familiar
-    UNAME       AS STRING * 12
+    UNAME      AS STRING * 12
     HEARTS     AS INTEGER
     ELEMENT    AS INTEGER
     PASSIVE    AS INTEGER   ' passive ID
@@ -73,17 +73,22 @@ END TYPE
 
 DIM Familiars(1 TO 16) AS Familiar
 DIM Effects(1 TO 8) AS Effect
-DIM Moves(1 TO 40) AS Move
-DIM Equippables(1 TO 8) AS Equipable
+DIM Moves(1 TO 41) AS Move
+DIM Equippables(1 TO 9) AS Equipable
 DIM Passives(1 TO 5) AS PASSIVE
 
 
 'Arrays containing the actual game state'
 
-DIM PlayerDeck(1 to 40) AS Card
-DIM PlayerMonsters(1 to 6) AS GameFam
-DIM FoeDeck(1 to 40) AS Card
-DIM FoeMonsters(1 to 40) AS GameFam 
+DIM SHARED PlayerDeck(1 to 40) AS Card
+DIM SHARED PlayerMonsters(1 to 6) AS GameFam
+DIM SHARED FoeDeck(1 to 40) AS Card
+DIM SHARED FoeMonsters(1 to 6) AS GameFam 
+
+'Ids for the current monster in game'
+ActiveFam = 1
+ActiveFoe = 1
+
 
  
 'Zubrute. A muscular bison that can force out foes'
@@ -524,11 +529,149 @@ Moves(32).CFCHECK = 0
 Moves(32).CFSECONDARY = 0
 Moves(32).BOOSTERSCALE = 0
 
+'Moves that come with equipable objects'
+
+
+Moves(33).UNAME = "PRIMAL RAGE"
+Moves(33).DESCRIPTION = "IF HEADS, DEALS DOUBLE DAMAGE IF 1/2 HP"
+Moves(33).POWER = 3
+Moves(33).STATUS = 0
+Moves(33).CFCHECK = 0
+Moves(33).CFSECONDARY = 1
+Moves(33).BOOSTERSCALE = 0
+
+Moves(34).UNAME = "HIBERNATE"
+Moves(34).DESCRIPTION = "HEALS 4HP, BUT SLEEPS THE NEXT TURN"
+Moves(34).POWER = 0
+Moves(34).STATUS = 0
+Moves(34).CFCHECK = 0
+Moves(34).CFSECONDARY = 0
+Moves(34).BOOSTERSCALE = 0
+
+Moves(35).UNAME = "DOWNLOAD"
+Moves(35).DESCRIPTION = "GAIN ONE OR THREE BOOSTERS ON COINFLIP"
+Moves(35).POWER = 0
+Moves(35).STATUS = 0
+Moves(35).CFCHECK = 1
+Moves(35).CFSECONDARY = 0
+Moves(35).BOOSTERSCALE = 0
+
+Moves(36).UNAME = "ELECTROCUTE"
+Moves(36).DESCRIPTION = "THE USER LOSES 1 OR 2HP ON COINFLIP"
+Moves(36).POWER = 4
+Moves(36).STATUS = 8
+Moves(36).CFCHECK = 0
+Moves(36).CFSECONDARY = 1
+Moves(36).BOOSTERSCALE = 0
+
+Moves(37).UNAME = "PARASYTE"
+Moves(37).DESCRIPTION = "1HP IS DRAINED PER TURN FROM FOE"
+Moves(37).POWER = 0
+Moves(37).STATUS = 10
+Moves(37).CFCHECK = 0
+Moves(37).CFSECONDARY = 0
+Moves(37).BOOSTERSCALE = 0
+
+Moves(38).UNAME = "CORRODER"
+Moves(38).DESCRIPTION = "ROBOT FOES RECEIVE DOUBLE DAMAGE"
+Moves(38).POWER = 3
+Moves(38).STATUS = 0
+Moves(38).CFCHECK = 0
+Moves(38).CFSECONDARY = 0
+Moves(38).BOOSTERSCALE = 0
+
+Moves(39).UNAME = "AMPLIFIED WAVE"
+Moves(39).DESCRIPTION = "DEALS EXTRA HP PER BOOSTER BUT KEEPS THEM"
+Moves(39).POWER = 2
+Moves(39).STATUS = 0
+Moves(39).CFCHECK = 0
+Moves(39).CFSECONDARY = 0
+Moves(39).BOOSTERSCALE = 1
+
+Moves(40).UNAME = "MODULO"
+Moves(40).DESCRIPTION = "DEALS A THIRD OF THE FOE HP"
+Moves(40).POWER = 0
+Moves(40).STATUS = 0
+Moves(40).CFCHECK = 0
+Moves(40).CFSECONDARY = 0
+Moves(40).BOOSTERSCALE = 0
+
+
+Moves(32).UNAME = "MYTHIC SWORD"
+Moves(32).DESCRIPTION = "THREE COINS. EACH COINS REDUCES DAMAGE"
+Moves(32).POWER = 5
+Moves(32).STATUS = 0
+Moves(32).CFCHECK = 0
+Moves(32).CFSECONDARY = 0
+Moves(32).BOOSTERSCALE = 0
+
 
 
 
  
- 
+
+
+'Cards with
+
+SUB init_decks
+
+	RANDOMIZE TIMER	
+	FOR i% = 1 TO 40
+			rno = INT(RND * 40) + 1
+				
+				if rno < 11 then
+					PlayerDeck(i%).CARDTYPE = 1 'Invoke'
+					PlayerDeck(i%).SUBID = 0 'All invoke cards are the same'
+					PlayerDeck(i%).POSITION = 1 'Decked'
+					
+				elseif rno > 10 and rno < 25 then
+					PlayerDeck(i%).CARDTYPE = 2 'Booster'
+					PlayerDeck(i%).SUBID = 0 'All boosters are the same'
+					PlayerDeck(i%).POSITION = 1
+					
+				elseif rno > 24 and rno < 33 then
+					PlayerDeck(i%).CARDTYPE = 3 'Effect card'
+					PlayerDeck(i%).SUBID = rno - 24 '(1 to 8)
+					PlayerDeck(i%).POSITION = 1
+					 
+				elseif rno > 32 and rno < 41 then
+					PlayerDeck(i%).CARDTYPE = 4 'Equipable'
+					PlayerDeck(i%).SUBID = rno - 32 '(1 to 8)
+					PlayerDeck(i%).POSITION = 1
+				endif
+
+		NEXT i%
+		
+		
+	FOR i% = 1 TO 40
+		
+			rno = INT(RND * 40) + 1
+
+			IF rno < 11 THEN
+				FoeDeck(i%).CARDTYPE = 1   ' Invoke
+				FoeDeck(i%).SUBID = 0
+				FoeDeck(i%).POSITION = 1
+
+			ELSEIF rno < 25 THEN
+				FoeDeck(i%).CARDTYPE = 2   ' Booster
+				FoeDeck(i%).SUBID = 0
+				FoeDeck(i%).POSITION = 1
+
+			ELSEIF rno < 33 THEN
+				FoeDeck(i%).CARDTYPE = 3   ' Effect
+				FoeDeck(i%).SUBID = rno - 24   ' 1 to 8
+				FoeDeck(i%).POSITION = 1
+
+			ELSE
+				FoeDeck(i%).CARDTYPE = 4   ' Equipable
+				FoeDeck(i%).SUBID = rno - 32   ' 1 to 8
+				FoeDeck(i%).POSITION = 1
+			END IF
+			
+	NEXT i%
+
+END SUB
 
 'Start mode 13, 320x200'
 RelInitVGA13 
+init_decks
